@@ -63,6 +63,7 @@ typedef struct
     float KP;
     float KI;
     float KD;
+    int testIteration;
 } Constant;
 
 /* After experimenting for a day, running this C program making a csv value and plotting from R,
@@ -88,7 +89,7 @@ double simulate_sensor(double true_value)
     double z0 = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
     // 0.05 is the flucuation that the sensor might read, okay if a GPWS sensor in aircraft calls 1000ft the fluctuation might be 0.05 ft
     // 0.01 is the small noise
-    double noise_std = 0.05 * fabs(true_value) + 0.01; // standard deviation of the Gaussian noise, std dev always tells us how spread out the values are around the mean
+    double noise_std = 0.05 * fabs(true_value) + 0.001; // standard deviation of the Gaussian noise, std dev always tells us how spread out the values are around the mean
     return true_value + z0 * noise_std;
     // example, true value is 25, noise 1.26 and z0 -0.3
 }
@@ -128,6 +129,7 @@ x_{k+1} = x_k + dx * dt = plant += dx * dt;  not good at maths but for the ref h
 
 double simulate_plant(double plant, double control, double dt, double tau_plant)
 {
+    // since the plant is not that responsive let's change the value of our tau_plane that came from solving the Euler method, differential equation
     double dx = (-plant + control) / tau_plant;
     plant += dx * dt;
     return plant;
@@ -155,13 +157,13 @@ int simple_pid(Constant k, float setPoint)
     struct timespec prev_time;
     clock_gettime(CLOCK_MONOTONIC, &prev_time);
     int c = 0;
-    double plant_tau = 2.0; // plant time contant in sec
+    double plant_tau = 3.0; // plant time contant in sec
 
     fprintf(ptr, "Delta,Setpoint,Output,Sim,Plant,P,I,D\n");
     while (1)
     {
 
-        if (c > 300)
+        if (c > k.testIteration)
             break;
         // I have faced a problem that couldn't be fixed for a day now let's analyze step by step what happened
         // I haven't use C ever since school, so small mitake can make a huge difference here
@@ -232,8 +234,14 @@ int main()
     k.KP = 0.01f;
     k.KI = 0.1f;
     k.KD = 0.09f;
+    k.testIteration = 300;
     simple_pid(k, 10.0f);
     /* Imagine if you're on your car and throtle is full for a sec will that make a difference,
     considering it's mass and interia it would take to acclerate, no but we want the system to be optimal */
+
+    /* With these tuning paramaters there is little bit of a ostillation in our controller, aslo the noise from the 
+    sensor is high compared to the reposne from our plant.
+    
+    The sensor is not that noisy but the way we are visualizing it makes it look like the sensor is noisy. */
     return 0;
 }
