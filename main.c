@@ -185,7 +185,8 @@ int simple_pid(Constant k, float setPoint)
 
         // for derivative term, line 40 for ref
         // if dt is too small then derivative term explodes, similar to vanishing gradient issue that we can across in Deep Nerual Network
-        float derivative_term =  // let's try to skip derivative term in first iteration, dejavu from neural net project where I forgot to activate and gradient vanished
+        float derivative_term = 0.0f;
+        if (c > 0 && dt >= 1e-6f) // let's try to skip derivative term in first iteration, dejavu from neural net project where I forgot to activate and gradient vanished
             derivative_term = k.KD * (delta - previous_error) / dt;
 
         // for interagal term, sums of all the error from start
@@ -232,5 +233,7 @@ int main()
     k.KI = 0.1f;
     k.KD = 0.09f;
     simple_pid(k, 10.0f);
+    /* Imagine if you're on your car and throtle is full for a sec will that make a difference,
+    considering it's mass and interia it would take to acclerate, no but we want the system to be optimal */
     return 0;
 }
