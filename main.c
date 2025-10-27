@@ -157,11 +157,11 @@ int simple_pid(Constant k, float setPoint)
     int c = 0;
     double plant_tau = 2.0; // plant time contant in sec
 
-    fprintf(ptr, "Delta,Setpoint,Output,Sim,Plant\n");
+    fprintf(ptr, "Delta,Setpoint,Output,Sim,Plant,P,I,D\n");
     while (1)
     {
 
-        if (c > 200)
+        if (c > 300)
             break;
         // I have faced a problem that couldn't be fixed for a day now let's analyze step by step what happened
         // I haven't use C ever since school, so small mitake can make a huge difference here
@@ -212,7 +212,7 @@ int simple_pid(Constant k, float setPoint)
         // when I just kept the random value it was unstable
 
         plant = simulate_plant(plant, output, dt, plant_tau); // ex its the deflection of aileron in case of aircraft
-        fprintf(ptr, "%.2f,%.2f,%.2f,%f,%f\n", delta, setPoint, output, measurement_sensor, plant);
+        fprintf(ptr, "%.2f,%.2f,%.2f,%f,%f,%f,%f,%f\n", delta, setPoint, output, measurement_sensor, plant, proportioanl_term, integral_term, derivative_term);
         previous_error = delta;
         prev_time = current_time;
 
