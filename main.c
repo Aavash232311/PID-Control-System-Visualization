@@ -89,7 +89,7 @@ double simulate_sensor(double true_value)
     double z0 = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
     // 0.05 is the flucuation that the sensor might read, okay if a GPWS sensor in aircraft calls 1000ft the fluctuation might be 0.05 ft
     // 0.01 is the small noise
-    double noise_std = 0.05 * fabs(true_value) + 0.001; // standard deviation of the Gaussian noise, std dev always tells us how spread out the values are around the mean
+    double noise_std = 0.01 * fabs(true_value) + 0.001; // standard deviation of the Gaussian noise, std dev always tells us how spread out the values are around the mean
     return true_value + z0 * noise_std;
     // example, true value is 25, noise 1.26 and z0 -0.3
 }
@@ -234,7 +234,7 @@ int main()
     k.KP = 0.01f;
     k.KI = 0.1f;
     k.KD = 0.09f;
-    k.testIteration = 300;
+    k.testIteration = 500;
     simple_pid(k, 10.0f);
     /* Imagine if you're on your car and throtle is full for a sec will that make a difference,
     considering it's mass and interia it would take to acclerate, no but we want the system to be optimal */

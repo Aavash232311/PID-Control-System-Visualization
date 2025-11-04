@@ -69,7 +69,5 @@ legend("topright",
        lty = c(1, 2, 3, 4),
        lwd = 2)         
 
-
-
 print("Script end!")
 
